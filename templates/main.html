@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блог</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    {% if messages %}
+        <div id="modal-message" class="modal">
+            <div class="modal-content">
+                {% for message in messages %}
+                    {% if 'root_error' in message.tags %}
+                        <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <button id="close-modal">OK</button>
+            </div>
+        </div>
+    {% endif %}
+
+    <header class="header">
+        <div class="logo">📖 MyBlog</div>
+        <div class="user-profile">
+            <a href="{% url 'addpost' %}" class="add-post-btn">+</a>
+            <span class="username">{{ user.username }}</span>
+            <a href="{% url 'profile' %}" class="profile-icon">👤</a>
+        </div>
+    </header>
+
+    <main class="content">
+        <h1>Все посты</h1>
+        <div class="posts">
+            {% for post in posts %}
+                <div class="post-card">
+                    <h2>{{ post.title }}</h2>
+                    <p>{{ post.text|truncatechars:30 }}</p>
+                    <div class="menu">
+                        <button class="menu-button">...</button>
+                        <div class="menu-dropdown">
+                            <ul>
+                                <li><a href="{% url 'postdetail' post.id %}">Посмотреть статью</a></li>
+                                <li><a href="{% url 'editpost' post.id %}">Редактировать статью</a></li>
+                                <li><a href="{% url 'deletepost' post.id %}">Удалить статью</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>Постов пока нет.</p>
+            {% endfor %}
+        </div>
+    </main>
+
+    <script>
+        const menuButtons = document.querySelectorAll('.menu-button');
+        let menuTimeout; // Переменная для таймера
+
+        menuButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const menu = button.nextElementSibling;
+                const isOpen = menu.style.display === 'block';
+
+                // Закрытие всех меню перед открытием нового
+                document.querySelectorAll('.menu-dropdown').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+
+                if (!isOpen) {
+                    menu.classList.add('show');
+                }
+            });
+        });
+
+        // Закрытие меню при выходе курсора
+        document.querySelectorAll('.menu-dropdown').forEach(menu => {
+            menu.addEventListener('mouseenter', () => {
+                if (menuTimeout) clearTimeout(menuTimeout);
+            });
+
+            menu.addEventListener('mouseleave', () => {
+                menuTimeout = setTimeout(() => {
+                    menu.classList.remove('show');
+                }, 3000); // 3 секунды
+            });
+        });
+
+        // Закрытие меню при клике вне меню
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.menu-button')) {
+                document.querySelectorAll('.menu-dropdown').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+
+        // Скрипт для закрытия всплывающего окна с ошибками
+        document.addEventListener("DOMContentLoaded", function () {
+            const modal = document.getElementById("modal-message");
+            const closeModal = document.getElementById("close-modal");
+
+            if (modal) {
+                modal.style.display = "flex"; // Показываем окно
+                closeModal.addEventListener("click", function () {
+                    modal.style.display = "none"; // Закрываем окно
+                });
+            }
+        });
+    </script>
+</body>
+</html>

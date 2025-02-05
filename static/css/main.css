@@ -1,0 +1,258 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #004d40, #00695c); /* Болотно-зеленый */
+    color: #333;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.username {
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+.profile-icon {
+    font-size: 24px;
+    text-decoration: none;
+}
+
+.add-post-btn {
+    position: absolute;
+    left: -50px;
+    background-color: #004d40; /* Болотно-зеленый */
+    color: white;
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.add-post-btn:hover {
+    background-color: #00332e; /* Более темный болотный зеленый */
+}
+
+.content {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+h1 {
+    text-align: center;
+}
+
+.posts {
+    display: grid;
+    gap: 20px;
+}
+
+.post-card {
+    position: relative;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Темная тень */
+    transition: transform 0.3s ease-in-out;
+    border: 1px solid #004d40; /* Четкая граница постов */
+    z-index: 1; /* Задний план для карточек */
+    word-wrap: break-word; /* Принудительный перенос длинных слов */
+    overflow-wrap: break-word; /* Дополнительный контроль над переносом */
+    max-width: 100%; /* Убедиться, что текст не выйдет за пределы карточки */
+}
+
+.post-card p {
+    overflow: hidden; /* Если текст слишком длинный, он не выйдет за пределы */
+    text-overflow: ellipsis; /* Отображать троеточие для длинного текста */
+}
+
+.post-card:hover {
+    transform: translateY(-3px);
+    z-index: 1; /* Чтобы статьи не перекрывали меню */
+}
+
+.post-card h2 {
+    margin: 0;
+    color: #004d40; /* Болотно-зеленый */
+}
+
+.read-more {
+    display: inline-block;
+    margin-top: 10px;
+    text-decoration: none;
+    color: #004d40;
+    font-weight: bold;
+}
+
+.menu-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    position: absolute;
+    right: 10px; /* Кнопка справа */
+    top: 10px;
+    z-index: 999; /* Очень высокий z-index для кнопки */
+}
+
+.menu-dropdown {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: translateY(10px);
+    z-index: 9999; /* Ставим на самый верх */
+}
+
+.menu-dropdown.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    z-index: 9999;
+}
+
+.menu-dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    z-index: 9999;
+}
+
+.menu-dropdown ul li {
+    padding: 8px 12px;
+    z-index: 9999;
+}
+
+.menu-dropdown ul li a {
+    text-decoration: none;
+    color: black;
+    font-size: 16px;
+    display: block;
+    z-index: 9999;
+}
+
+.menu-dropdown ul li a:hover {
+    color: #004d40; /* Убрали увеличение текста */
+    z-index: 9999;
+}
+
+/* Затемнение всей страницы */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6); /* Немного темнее затемнение */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000; /* Поверх всех элементов */
+    opacity: 0;
+    animation: fadeIn 0.2s forwards; /* Плавное появление */
+}
+
+/* Плавное появление */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Контент окна */
+.modal-content {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px; /* Более мягкие углы */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Более глубокая тень */
+    text-align: center;
+    min-width: 320px;
+    max-width: 450px;
+    position: relative;
+    transform: scale(0.95); /* Легкое уменьшение для эффекта */
+    animation: zoomIn 0.2s forwards; /* Плавное увеличение */
+}
+
+/* Плавное увеличение окна */
+@keyframes zoomIn {
+    from {
+        transform: scale(0.95);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+h2 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.message {
+    font-size: 16px;
+    color: #444;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* Стиль кнопки для закрытия */
+#close-modal {
+    padding: 12px 24px;
+    background: #004d40; /* Болотно-зеленый */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.3s ease;
+}
+
+#close-modal:hover {
+    background: #00332e; /* Более темный зеленый */
+    transform: scale(1.05); /* Легкое увеличение кнопки при наведении */
+}
+
+#close-modal:focus {
+    outline: none; /* Убираем обводку при фокусе */
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.title }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/post_detail.css' %}">
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let modal = document.getElementById("modal-message");
+        let closeButton = document.getElementById("close-modal");
+
+        if (modal && closeButton) {
+            closeButton.onclick = function() {
+                modal.style.display = "none";
+            };
+
+            window.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.style.display = "none";
+                }
+            };
+        }
+    });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>{{ post.title }}</h1>
+    </header>
+
+    <main>
+        <div class="post">
+            <h2>{{ post.title }}</h2>
+            <p class="post-author">Автор: {{ post.author.username }}</p>
+            <div class="post-text-container">
+                <p>{{ post.text }}</p>
+            </div>
+
+            <h3>Комментарии</h3>
+            <div class="comments">
+                {% for comment in comments %}
+                    <div class="comment">
+                        <p><strong>{{ comment.author.username }}</strong> ({{ comment.created_at }})</p>
+                        <p>{{ comment.text }}</p>
+
+                        {% if user == comment.author %}
+                            <form method="POST" action="{% url 'delcomment' comment.id %}" style="display:inline;">
+                                <button type="submit" name="delcomment" style="background-color: #d32f2f; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer;">
+                                    Удалить комментарий
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <p>Комментариев нет</p>
+                {% endfor %}
+            </div>
+
+            {% if user.is_authenticated %}
+                <h4>Добавить комментарий</h4>
+                <form method="POST">
+                    {{ form.as_p }}
+                    <button type="submit" name="addcomment">Отправить</button>
+                </form>
+            {% else %}
+                <p>Для добавления комментариев, пожалуйста, <a href="{% url 'register' %}">войдите</a>.</p>
+            {% endif %}
+
+            <div class="post-actions">
+                <a href="{% url 'editpost' post.id %}">Редактировать статью</a>
+                <a href="{% url 'deletepost' post.id %}">Удалить статью</a>
+                <a href="{% url 'main' %}">Вернуться на главную</a>
+            </div>
+        </div>
+    </main>
+
+    {% if messages %}
+        <div id="modal-message" class="modal">
+            <div class="modal-content">
+                {% for message in messages %}
+                    {% if 'root_error' in message.tags %}
+                        <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <button id="close-modal">OK</button>
+            </div>
+        </div>
+    {% endif %}
+</body>
+</html>

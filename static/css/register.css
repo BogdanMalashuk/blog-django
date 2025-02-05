@@ -1,0 +1,203 @@
+/* Общие настройки для страницы */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f3f3f3; /* Светлый фон страницы */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Контейнер формы */
+.auth-container {
+    width: 100%;
+    max-width: 380px;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box; /* Убедитесь, что padding не влияет на ширину */
+}
+
+/* Заголовок формы */
+.auth-container h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 28px;
+    color: #00796b; /* Яркий зеленый для заголовка */
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+/* Эффект наведения на контейнер формы */
+.auth-container:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Формы (поля ввода) */
+input[type="text"], input[type="password"] {
+    padding: 15px;
+    margin: 12px 0;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fafafa;
+    font-size: 16px;
+    color: #333;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box; /* Учитываем padding в размере поля */
+}
+
+/* При фокусе на поле ввода */
+input[type="text"]:focus, input[type="password"]:focus {
+    border-color: #00796b; /* Зеленая рамка при фокусе */
+    box-shadow: 0 0 8px rgba(0, 121, 107, 0.3); /* Легкая тень вокруг поля */
+}
+
+/* Кнопки */
+button {
+    padding: 14px;
+    margin: 10px 0;
+    width: 100%;
+    border: none;
+    background-color: #00796b; /* Яркий зеленый для кнопок */
+    color: white;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Эффект на кнопки при наведении */
+button:hover {
+    background-color: #004d40; /* Темный оттенок зеленого */
+    transform: translateY(-4px); /* Плавное поднимание */
+}
+
+/* Кнопка "Зарегистрироваться" */
+button[type="submit"]:nth-child(2) {
+    background-color: #ff9800; /* Оранжевая кнопка для регистрации */
+}
+
+/* При наведении на кнопку "Зарегистрироваться" */
+button[type="submit"]:nth-child(2):hover {
+    background-color: #fb8c00; /* Темнее оранжевый при наведении */
+}
+
+/* Стиль для скрытого токена */
+input[type="hidden"] {
+    display: none;
+}
+
+/* Дополнительные отступы между элементами */
+.form-group {
+    margin-bottom: 15px;
+}
+
+/* Добавление мягких теней на форму */
+.auth-container {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Анимации при загрузке формы */
+.auth-container {
+    opacity: 0;
+    animation: fadeIn 0.1s forwards;
+}
+
+/* Анимация появления формы */
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Затемнение всей страницы */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6); /* Более темное затемнение */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000; /* Поверх всех элементов */
+    opacity: 0;
+    animation: fadeIn 0.1s forwards; /* Плавное появление */
+}
+
+/* Плавное появление */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Контент окна */
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px; /* Мягкие углы */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Глубокая тень */
+    text-align: center;
+    min-width: 320px;
+    max-width: 450px;
+    position: relative;
+    transform: scale(0.95); /* Легкое уменьшение для эффекта */
+    animation: zoomIn 0.2s forwards; /* Плавное увеличение */
+}
+
+/* Плавное увеличение окна */
+@keyframes zoomIn {
+    from {
+        transform: scale(0.95);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+h2 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.message {
+    font-size: 16px;
+    color: #444;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* Стиль кнопки для закрытия */
+#close-modal {
+    padding: 12px 24px;
+    background: #00796b; /* Болотно-зеленый */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+#close-modal:hover {
+    background: #004d40; /* Темный зеленый */
+    transform: scale(1.05); /* Легкое увеличение кнопки */
+}
+
+#close-modal:focus {
+    outline: none; /* Убираем обводку при фокусе */
+}

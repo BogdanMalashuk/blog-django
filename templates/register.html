@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация / Регистрация</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+</head>
+<body>
+    {% if messages %}
+        <div id="modal-message" class="modal">
+            <div class="modal-content">
+                {% for message in messages %}
+                    {% if 'registration_error' in message.tags %}
+                        <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <button id="close-modal">OK</button>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="auth-container">
+        <h2>Авторизация или Регистрация</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" name="login">Войти</button>
+            <button type="submit" name="register">Зарегистрироваться</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let modal = document.getElementById("modal-message");
+            let closeModal = document.getElementById("close-modal");
+
+            if (modal) {
+                modal.style.display = "flex"; // Показываем окно
+                closeModal.addEventListener("click", function () {
+                    modal.style.display = "none"; // Закрываем окно
+                });
+            }
+        });
+    </script>
+
+
+
+</body>
+</html>
