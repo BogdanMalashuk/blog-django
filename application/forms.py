@@ -14,9 +14,15 @@ class PostForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
+    parent = forms.ModelChoiceField(
+        queryset=Comment.objects.all(),
+        required=False,
+        widget=forms.HiddenInput()
+    )
+
     class Meta:
         model = Comment
-        fields = ['text']
+        fields = ['text', 'parent']
         widgets = {
             'text': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Напишите ваш комментарий...'}),
         }

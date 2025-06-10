@@ -6,6 +6,7 @@
     <title>{{ post.title }}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/post_detail.css' %}">
+
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         let modal = document.getElementById("modal-message");
@@ -22,8 +23,22 @@
                 }
             };
         }
+
+        // Логика отображения формы ответа
+        document.querySelectorAll(".reply-button").forEach(button => {
+            button.addEventListener("click", function() {
+                let commentId = this.dataset.commentId;
+                let form = document.getElementById("reply-form-" + commentId);
+                if (form.style.display === "none" || form.style.display === "") {
+                    form.style.display = "block";
+                } else {
+                    form.style.display = "none";
+                }
+            });
+        });
     });
     </script>
+
 </head>
 <body>
     <header>
@@ -38,21 +53,71 @@
                 <p>{{ post.text }}</p>
             </div>
 
+            <div class="like-dislike">
+                <form action="{% url 'like_post' post.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit"
+                            {% if user in post.liked_users.all %}
+                                style="background-color: #4CAF50; color: white;"
+                            {% endif %}>
+                        👍 {{ post.likes_count }}
+                    </button>
+                </form>
+
+                <form action="{% url 'dislike_post' post.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit"
+                            {% if user in post.disliked_users.all %}
+                                style="background-color: #d32f2f; color: white;"
+                            {% endif %}>
+                        👎 {{ post.dislikes_count }}
+                    </button>
+                </form>
+            </div>
+
             <h3>Комментарии</h3>
             <div class="comments">
                 {% for comment in comments %}
-                    <div class="comment">
-                        <p><strong>{{ comment.author.username }}</strong> ({{ comment.created_at }})</p>
-                        <p>{{ comment.text }}</p>
+                    {% if not comment.parent %}
+                        <div class="comment">
+                            <p><strong>{{ comment.author.username }}</strong> ({{ comment.created_at }})</p>
+                            <p>{{ comment.text }}</p>
 
-                        {% if user == comment.author %}
-                            <form method="POST" action="{% url 'delcomment' comment.id %}" style="display:inline;">
-                                <button type="submit" name="delcomment" style="background-color: #d32f2f; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer;">
-                                    Удалить комментарий
-                                </button>
-                            </form>
-                        {% endif %}
-                    </div>
+                            <!-- Кнопка "Ответить" -->
+                            {% if user.is_authenticated %}
+                                <button class="reply-button" data-comment-id="{{ comment.id }}">Ответить</button>
+                            {% endif %}
+
+                            {% if user == comment.author %}
+                                <form method="POST" action="{% url 'delcomment' post.id comment.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" name="delcomment" style="background-color: #d32f2f; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer;">
+                                        Удалить комментарий
+                                    </button>
+                                </form>
+                            {% endif %}
+
+                            <!-- Форма ответа (по умолчанию скрыта) -->
+                            {% if user.is_authenticated %}
+                                <form method="POST" class="reply-form" id="reply-form-{{ comment.id }}" style="display: none;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="parent" value="{{ comment.id }}">
+                                    {{ form.as_p }}
+                                    <button type="submit">Ответить</button>
+                                </form>
+                            {% endif %}
+
+                            <!-- Отображение ответов (если они есть) -->
+                            <div class="replies">
+                                {% for reply in comment.replies.all %}
+                                    <div class="reply">
+                                        <p><strong>{{ reply.author.username }}</strong> ({{ reply.created_at }})</p>
+                                        <p>{{ reply.text }}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
                 {% empty %}
                     <p>Комментариев нет</p>
                 {% endfor %}
@@ -61,6 +126,7 @@
             {% if user.is_authenticated %}
                 <h4>Добавить комментарий</h4>
                 <form method="POST">
+                    {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit" name="addcomment">Отправить</button>
                 </form>

@@ -3,8 +3,10 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
+
 from .forms import RegisterForm, PostForm, CommentForm
 from .models import Post, Comment
+# from .signals.signals import user_registered
 
 
 def home(request):
@@ -31,6 +33,7 @@ def register(request):
                     messages.error(request, "This username is already taken.",  extra_tags='registration_error')
                 else:
                     user = User.objects.create_user(username=username, password=password)
+                    # user_registered.send(sender=request, user=user, timestamp=now())  # сигнал о регистрации
                     login(request, user)
                     return redirect('main')
     else:
@@ -69,14 +72,28 @@ def postdetail(request, post_id):
 
 
 @login_required
-def delcomment(request, comment_id):
+def delcomment(request, post_id, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
-    cpid = comment.post.id
     if request.user == comment.author:
         comment.delete()
     else:
         messages.error(request, "Только автор может удалить комментарий.", extra_tags='root_error')
-    return redirect('postdetail', cpid)
+    return redirect('postdetail', post_id=post_id)
+
+
+@login_required
+def reply_to_comment(request, comment_id):
+    parent_comm = get_object_or_404(Comment, id=comment_id)
+    form = CommentForm(request.POST)
+
+    if form.is_valid():
+        reply = form.save(commit=False)
+        reply.article = parent_comm.article
+        reply.author = request.user
+        reply.parent = parent_comm
+        reply.save()
+
+    return redirect('postdetail', post_id=parent_comm.article.id)
 
 
 @login_required
@@ -86,10 +103,10 @@ def addpost(request):
         if form.is_valid():
             post = form.save(commit=False)  # без записи в бд
             post.author = request.user
-            post.save()  # с записью в бд
+            post.save()
             return redirect('main')
     else:
-        form = PostForm()  # пустая форма
+        form = PostForm()
     return render(request, 'addpost.html', {'form': form})
 
 
@@ -121,3 +138,41 @@ def editpost(request, post_id):
     else:
         form = PostForm(instance=post)  # форма с данными из объекта пост
     return render(request, 'editpost.html', {'form': form})
+
+
+@login_required
+def like_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    if request.user in post.liked_users.all():
+        post.liked_users.remove(request.user)
+        post.likes -= 1
+        if post.likes < 0:
+            post.likes = 0
+    else:
+        post.liked_users.add(request.user)
+        post.likes += 1
+        if request.user in post.disliked_users.all():
+            post.disliked_users.remove(request.user)
+            post.dislikes -= 1
+
+    post.save()
+    return redirect('postdetail', post_id=post.id)
+
+
+@login_required
+def dislike_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    if request.user in post.disliked_users.all():
+        post.disliked_users.remove(request.user)
+        post.dislikes -= 1
+    else:
+        post.disliked_users.add(request.user)
+        post.dislikes += 1
+        if request.user in post.liked_users.all():
+            post.liked_users.remove(request.user)
+            post.likes -= 1
+
+    post.save()
+    return redirect('postdetail', post_id=post.id)
